@@ -1,30 +1,79 @@
-import random
-class SlidingPuzzle:
-    def __init__(self):
-        self.state = list(range(1, 9)) + [0] 
-        random.shuffle(self.state) 
-    def __str__(self):
-        return '\n'.join([' '.join(map(str, self.state[i:i+3])) for i in range(0, 9, 3)])
-    def move(self, number):
-        empty_index = self.state.index(0)
-        number_index = self.state.index(number)
-        if (empty_index - number_index) in [-1, 1, -3, 3]:  
-            self.state[empty_index], self.state[number_index] = self.state[number_index], self.state[empty_index]
-        else:
-            print("Invalid move")
-    def is_solved(self):
-        return self.state == [1, 2, 3, 4, 5, 6, 7, 8, 0]
+import heapq
+
+def manhattan_distance(state, goal):
+    distance = 0
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] != 0:
+                x, y = divmod(state[i][j] - 1, 3)
+                distance += abs(x - i) + abs(y - j)
+    return distance
+
+def get_neighbors(state):
+    neighbors = []
+    x, y = next((i, j) for i, row in enumerate(state) for j, val in enumerate(row) if val == 0)
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    for dx, dy in moves:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new_state = [row[:] for row in state]
+            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
+            neighbors.append(new_state)
+    
+    return neighbors
+
+def a_star_search(start, goal):
+    open_set = []
+    heapq.heappush(open_set, (0, start, 0, None))
+    closed_set = set()
+    parent_map = {}
+
+    while open_set:
+        _, current, cost, parent = heapq.heappop(open_set)
+
+        if current == goal:
+            path = []
+            while current:
+                path.append(current)
+                current = parent_map.get(tuple(map(tuple, current)))
+            return path[::-1]
+
+        closed_set.add(tuple(map(tuple, current)))
+        parent_map[tuple(map(tuple, current))] = parent
+
+        for neighbor in get_neighbors(current):
+            if tuple(map(tuple, neighbor)) in closed_set:
+                continue
+            heapq.heappush(open_set, (cost + 1 + manhattan_distance(neighbor, goal), neighbor, cost + 1, current))
+    
+    return None
+
+def input_puzzle():
+    puzzle = []
+    print("Enter the puzzle in row-major order (use 0 for the blank space):")
+    for i in range(3):
+        row = list(map(int, input().strip().split()))
+        puzzle.append(row)
+    return puzzle
+
 if __name__ == "__main__":
-    puzzle = SlidingPuzzle()
-    print("Initial State:")
-    print(puzzle)
-    while not puzzle.is_solved():
-        move = int(input("Enter number to move (0 to quit): "))
-        if move == 0:
-            break
-        puzzle.move(move)
-        print(puzzle)
-    if puzzle.is_solved():
-        print("Congratulations! Puzzle solved.")
+    print("Input start puzzle:")
+    start_board = input_puzzle()
+
+    goal_board = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 0]
+    ]
+
+    solution = a_star_search(start_board, goal_board)
+
+    if solution:
+        print("Solution found:")
+        for step in solution:
+            for row in step:
+                print(row)
+            print()
     else:
-        print("Quitting...")
+        print("No solution found")
