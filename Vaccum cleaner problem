@@ -1,18 +1,43 @@
-def clean_grid(grid):
-    movements = []
-    rows, cols = len(grid), len(grid[0])
-    for i in range(rows):
-        for j in range(cols):
-            if grid[i][j] == 'D':
-                movements.extend(['DOWN'] * i if i > 0 else [])
-                movements.extend(['RIGHT'] * j if j > 0 else [])
-                movements.extend(['UP'] * i)
-                movements.extend(['LEFT'] * j)
-                grid[i][j] = 'C'
-    return movements
+import random
 
-if __name__ == "__main__":
-    grid = [['C', 'D', 'D'], ['D', 'C', 'D'], ['D', 'D', 'C']]
-    movements = clean_grid(grid)
-    print("Movements to clean the grid:")
-    print(movements)
+def display(room):
+    print(room)
+
+room = [
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+]
+print("All the rooom are dirty")
+display(room)
+
+x =0
+y= 0
+
+while x < 4:
+    while y < 4:
+        room[x][y] = random.choice([0,1])
+        y+=1
+    x+=1
+    y=0
+
+print("Before cleaning the room I detect all of these random dirts")
+display(room)
+x =0
+y= 0
+z=0
+while x < 4:
+    while y < 4:
+        if room[x][y] == 1:
+            print("Vaccum in this location now,",x, y)
+            room[x][y] = 0
+            print("cleaned", x, y)
+            z+=1
+        y+=1
+    x+=1
+    y=0
+pro= (100-((z/16)*100))
+print("Room is clean now, Thanks for using : 3710933")
+display(room)
+print('performance=',pro,'%')
