@@ -1,79 +1,96 @@
-import heapq
+import copy
+from heapq import heappush, heappop
+n = 3
+row = [ 1, 0, -1, 0 ]
+col = [ 0, -1, 0, 1 ]
+class priorityQueue:
+	def __init__(self):
+		self.heap = []
+	def push(self, k):
+		heappush(self.heap, k)
+	def pop(self):
+		return heappop(self.heap)
+	def empty(self):
+		if not self.heap:
+			return True
+		else:
+			return False
+class node:
+	def __init__(self, parent, mat, empty_tile_pos,
+				cost, level):
+		self.parent = parent
+		self.mat = mat
+		self.empty_tile_pos = empty_tile_pos
+		self.cost = cost
+		self.level = level
+	def __lt__(self, nxt):
+		return self.cost < nxt.cost
+def calculateCost(mat, final) -> int:
+	count = 0
+	for i in range(n):
+		for j in range(n):
+			if ((mat[i][j]) and
+				(mat[i][j] != final[i][j])):
+				count += 1			
+	return count
+def newNode(mat, empty_tile_pos, new_empty_tile_pos,
+			level, parent, final) -> node:
+	new_mat = copy.deepcopy(mat)
+	x1 = empty_tile_pos[0]
+	y1 = empty_tile_pos[1]
+	x2 = new_empty_tile_pos[0]
+	y2 = new_empty_tile_pos[1]
+	new_mat[x1][y1], new_mat[x2][y2] = new_mat[x2][y2], new_mat[x1][y1]
+	cost = calculateCost(new_mat, final)
+	new_node = node(parent, new_mat, new_empty_tile_pos,
+					cost, level)
+	return new_node
+def printMatrix(mat):
+	for i in range(n):
+		for j in range(n):
+			print("%d " % (mat[i][j]), end = " ")	
+		print()
+def isSafe(x, y):
+	return x >= 0 and x < n and y >= 0 and y < n
+def printPath(root):
+	
+	if root == None:
+		return
+	printPath(root.parent)
+	printMatrix(root.mat)
+	print()
+def solve(initial, empty_tile_pos, final):
+	pq = priorityQueue()
+	cost = calculateCost(initial, final)
+	root = node(None, initial,
+				empty_tile_pos, cost, 0)
+	pq.push(root)
+	while not pq.empty():
+		minimum = pq.pop()
+		if minimum.cost == 0:
 
-def manhattan_distance(state, goal):
-    distance = 0
-    for i in range(3):
-        for j in range(3):
-            if state[i][j] != 0:
-                x, y = divmod(state[i][j] - 1, 3)
-                distance += abs(x - i) + abs(y - j)
-    return distance
+			printPath(minimum)
+			return
+		for i in range(4):
+			new_tile_pos = [
+				minimum.empty_tile_pos[0] + row[i],
+				minimum.empty_tile_pos[1] + col[i], ]
+				
+			if isSafe(new_tile_pos[0], new_tile_pos[1]):
+				child = newNode(minimum.mat,
+								minimum.empty_tile_pos,
+								new_tile_pos,
+								minimum.level + 1,
+								minimum, final,)
 
-def get_neighbors(state):
-    neighbors = []
-    x, y = next((i, j) for i, row in enumerate(state) for j, val in enumerate(row) if val == 0)
-    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    
-    for dx, dy in moves:
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < 3 and 0 <= ny < 3:
-            new_state = [row[:] for row in state]
-            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
-            neighbors.append(new_state)
-    
-    return neighbors
+				# Add child to list of live nodes
+				pq.push(child)
+initial = [ [ 1, 2, 3 ],
+			[ 5, 6, 0 ],
+			[ 7, 8, 4 ] ]
+final = [ [ 1, 2, 3 ],
+		[ 5, 8, 6 ],
+		[ 0, 7, 4 ] ]
 
-def a_star_search(start, goal):
-    open_set = []
-    heapq.heappush(open_set, (0, start, 0, None))
-    closed_set = set()
-    parent_map = {}
-
-    while open_set:
-        _, current, cost, parent = heapq.heappop(open_set)
-
-        if current == goal:
-            path = []
-            while current:
-                path.append(current)
-                current = parent_map.get(tuple(map(tuple, current)))
-            return path[::-1]
-
-        closed_set.add(tuple(map(tuple, current)))
-        parent_map[tuple(map(tuple, current))] = parent
-
-        for neighbor in get_neighbors(current):
-            if tuple(map(tuple, neighbor)) in closed_set:
-                continue
-            heapq.heappush(open_set, (cost + 1 + manhattan_distance(neighbor, goal), neighbor, cost + 1, current))
-    
-    return None
-
-def input_puzzle():
-    puzzle = []
-    print("Enter the puzzle in row-major order (use 0 for the blank space):")
-    for i in range(3):
-        row = list(map(int, input().strip().split()))
-        puzzle.append(row)
-    return puzzle
-
-if __name__ == "__main__":
-    print("Input start puzzle:")
-    start_board = input_puzzle()
-
-    goal_board = [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 0]
-    ]
-
-    solution = a_star_search(start_board, goal_board)
-
-    if solution:
-        print("Solution found:")
-        for step in solution:
-            for row in step:
-                print(row)
-            print()
-    else:
-        print("No solution found")
+empty_tile_pos = [ 1, 2 ]
+solve(initial, empty_tile_pos, final)
