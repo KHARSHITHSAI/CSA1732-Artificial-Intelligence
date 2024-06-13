@@ -23,3 +23,10 @@ is_gas_giant(Name) :-
 
 is_ice_giant(Name) :-
     planet(Name, ice_giant, _, _).
+
+
+is_ice_giant(Name).
+Name = uranus ;
+Name = neptune.
+
+
