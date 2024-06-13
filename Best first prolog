@@ -25,3 +25,5 @@ compare_priority(Order, node(_, Path1), node(_, Path2)) :-
     length(Path1, Length1),
     length(Path2, Length2),
     compare(Order, Length1, Length2).
+Path = [a, c, g].
+
