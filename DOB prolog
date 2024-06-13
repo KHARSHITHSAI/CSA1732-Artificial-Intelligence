@@ -8,3 +8,8 @@ name(lisa, date(1982, 7, 3)).
 % Find the DOB of a person
 dob_of_person(Name, DOB) :-
     name(Name, DOB).
+
+dob_of_person(john, DOB).
+DOB = date(1990, 5, 15).
+
+
