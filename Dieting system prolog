@@ -22,3 +22,22 @@ suggest_diet(Diet) :-
 % To get a list of suitable foods for a person with diabetes
 % ?- suggest_diet(Diet).
 % Diet = [apple, chicken, broccoli].
+
+suitable_for_diabetes(apple).
+true.
+suitable_for_diabetes(banana).
+false.
+suitable_for_diabetes(rice).
+false.
+suitable_for_diabetes(broccoli).
+true.
+suggest_diet(Diet).
+Diet = [apple, chicken, broccoli].
+
+
+
+
+
+
+
+
