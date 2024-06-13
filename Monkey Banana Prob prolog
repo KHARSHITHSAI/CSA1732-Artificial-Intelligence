@@ -64,3 +64,9 @@ plan(State1, [Action | PlanRest]) :-
     can(do(Action), State1),
     apply(Action, State1, State2),
     plan(State2, PlanRest).
+
+goal_state(GoalState).
+GoalState = state(at(monkey, _, top), has(banana), _, _).
+
+
+
