@@ -22,3 +22,8 @@ enrolled_in(john, math).
 enrolled_in(john, physics).
 enrolled_in(lisa, physics).
 enrolled_in(alex, chemistry).
+
+
+enrolled_in(Student, physics).
+Student = john ;
+Student = lisa.
