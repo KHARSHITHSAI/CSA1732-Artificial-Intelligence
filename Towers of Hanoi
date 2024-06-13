@@ -10,3 +10,11 @@ nl.
          move(M,X,Z,Y),
          move(1,X,Y,_),
          move(M,Z,Y,X).
+
+move(2, left, right, middle).
+Move top disk from left to middle
+Move top disk from left to right
+Move top disk from middle to right
+true.
+
+
