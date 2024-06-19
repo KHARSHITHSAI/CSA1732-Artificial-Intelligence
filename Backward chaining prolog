@@ -1,4 +1,4 @@
-% Rules
+% Hypotheses
 hypothesis(has_flu) :- symptom(fever), symptom(cough).
 hypothesis(has_allergy) :- symptom(sneezing), symptom(runny_nose).
 
@@ -11,10 +11,14 @@ symptom(runny_nose).
 % Backward chaining procedure
 diagnose(Condition) :-
     hypothesis(Condition),
-    writeln('Patient may have: '),
+    writeln('Patient may have:'),
     writeln(Condition),
     !.
-diagnose(_).
+diagnose(_) :-
+    writeln('No diagnosis can be made with the given symptoms.').
+
+% To initiate the diagnosis, query: diagnose(Condition).
+
 
 diagnose(X).
 Patient may have:
